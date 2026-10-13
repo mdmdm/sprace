@@ -1,0 +1,159 @@
+{
+  "levels": [
+    {
+      "number": 0,
+      "title": "A Simple Twist of Gate",
+      "file": "levels/0/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/bd32000.gvd",
+      "music": 190,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 1,
+      "title": "Satan's Gates",
+      "file": "levels/1/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/BD32001.GVD",
+      "music": 190,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Porter Terror",
+      "file": "levels/2/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/BD32002.GVD",
+      "music": 190,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Conundrum",
+      "file": "levels/3/level.json",
+      "reported_teleport_loop_repaired": true,
+      "source": "examples/space-race/rel/data/BD32003.GVD",
+      "music": 190,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Sporificator",
+      "file": "levels/4/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/Bd32004.gvd",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Heliobatica",
+      "file": "levels/5/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/Bd32005.gvd",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Bats in the Trash",
+      "file": "levels/6/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact4/bd32006.gvd",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Bomb in the Middle",
+      "file": "levels/7/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact4/BD32007.GVD",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Walk on Bats ",
+      "file": "levels/8/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact5/BD32008.GVD",
+      "music": 184,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Bouncorama",
+      "file": "levels/9/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact5/BD32009.GVD",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 10,
+      "title": "Bounciabattica",
+      "file": "levels/10/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact5/bd32010.GVD",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 11,
+      "title": "Upchuck City",
+      "file": "levels/11/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/compact5/Bd32011.gvd",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 706,
+      "title": "Space Guano! (alternate)",
+      "file": "levels/706/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/bd32006.gvd",
+      "music": 181,
+      "missing_audio": [
+        169
+      ]
+    },
+    {
+      "number": 700,
+      "title": "A Simple Twist of Gate (alternate)",
+      "file": "levels/700/level.json",
+      "reported_teleport_loop_repaired": false,
+      "source": "examples/space-race/rel/data/BD32700.GVD",
+      "music": 184,
+      "missing_audio": [
+        169
+      ]
+    }
+  ],
+  "scope": "Archived editor saves in numerical order, followed by alternates; original campaign order remains unresolved."
+}

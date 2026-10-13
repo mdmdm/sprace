@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "story": "18 source dialogue segments, individually matched in recovered intro.clt; readable adaptation, no original intro execution.",
+  "sources": {
+    "examples/space-race/dev/US/1/introtxt.seq": "c514271c133749e65bea7f0cdb9a52d9fccd125aac4d2bae206f60bfaab11bc3",
+    "examples/space-race/dev/XX/1/Editor.seq": "128e64034de9505eae8da9bdbb08e56fde228a9d33729279c11adfd9d2634898",
+    "examples/space-race/dev/US/1/MUSIC.STM": "d7fec0ea646436f1aba51d15b530ef778e6e78e039e684ff489d5a94f520554a",
+    "examples/space-race/rel/data/BD102.STR": "8d1e4f8b3e90c86d75b9c904fb87501519bd0c423b7e15e161955456ddccb5ce"
+  },
+  "music": [
+    {
+      "title": "Spore from planet M-Z",
+      "slot": 181,
+      "source": "examples/space-race/rel/data/bd181.wav",
+      "sha256": "5ebe4a5ec2c08588a4fc98d4610be417b58e61aca25af9a27395c184ec85800a",
+      "output": "web-audio/bd181.wav"
+    },
+    {
+      "title": "Cold Fusion",
+      "slot": 184,
+      "source": "examples/space-race/rel/data/bd184.wav",
+      "sha256": "e676d79d3041ac511f5a1f969ca98ff836cdc17fa4fba91833b173872bcd3e7a",
+      "output": "web-audio/bd184.wav"
+    },
+    {
+      "title": "Waltzing with Neptune",
+      "slot": 188,
+      "source": "examples/space-race/rel/data/bd188.wav",
+      "sha256": "37abec855ab8f7631723e7df47d7d418dce99deb7f234dd20995ebdf42ebfd52",
+      "output": "web-audio/bd188.wav"
+    },
+    {
+      "title": "Galactic Heart Attack",
+      "slot": 189,
+      "source": "examples/space-race/rel/data/BD189.WAV",
+      "sha256": "b47f7dd39cd986973fcd0d2ab48b832ca0ccad5f2e683a75c14e65e58df518ca",
+      "output": "web-audio/bd189.wav"
+    },
+    {
+      "title": "Ship's Hum",
+      "slot": 190,
+      "source": "examples/space-race/rel/data/BD190.WAV",
+      "sha256": "96b489a8555c1b3757c33f04497c217aeed51bb53a8a1396998df852f56ced97",
+      "output": "web-audio/bd190.wav"
+    }
+  ],
+  "music_mapping": "Editor.seq MUSICSLOT=180 plus zero-based MUSIC.STM entry. Static title mapping; recordings copied unchanged.",
+  "preserved_demo": {
+    "date": "2026-10-13",
+    "reason": "Owner requested preservation of the working demo before incorporating the remaining archived website material.",
+    "file": "2026-10-13-demo.zip",
+    "bytes": 5599590,
+    "sha256": "e286bb1839e9acd80712ee445b8225546e91f934d18687685070c4e929c581f9",
+    "members": 3652,
+    "manifest_files_verified": 3651,
+    "entry": "index.html",
+    "scope": "Frozen standalone browser package, including existing site, all 14 playable layouts, bundled JS, images, audio and build manifest. No original Windows execution implied."
+  },
+  "website_gifs": [
+    "baby",
+    "backup",
+    "bat",
+    "door",
+    "down2",
+    "firstaid",
+    "harry",
+    "helium",
+    "hydrogen",
+    "jet",
+    "logo",
+    "mama",
+    "nitro",
+    "playup",
+    "prof",
+    "soda",
+    "space",
+    "trans",
+    "winnermark"
+  ]
+}
