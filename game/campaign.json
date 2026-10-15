@@ -11,7 +11,7 @@
         163,
         169
       ],
-      "briefing": "ChatGPT generated training level. The crew access route has ladders, moving platforms and a spring. Matching Trance Porters share a circuit. Engineering has left three buttons to release the airlock gates. Mind the live pits, Captain."
+      "briefing": "The crew access route has ladders, moving platforms and a spring. Matching Trance Porters share a circuit; some have more than two stops. Engineering has left three buttons to release the airlock gates. Mind the live pits, Captain."
     },
     {
       "number": 0,
@@ -182,5 +182,5 @@
       ]
     }
   ],
-  "scope": "Four new practice decks, followed by archived editor saves and alternates; original campaign order remains unresolved."
+  "scope": "Crew Access practice deck, followed by archived editor saves and alternates; original campaign order remains unresolved."
 }

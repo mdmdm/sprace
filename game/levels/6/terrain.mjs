@@ -100,6 +100,9 @@ export function step(p, input, level) {
     if(input.right) p.face=1;
     if(supported) {
       p.ix=(10+p.dx-Math.trunc(p.dx/2))*p.face;
+      // Owner-requested browser assistance: a stationary jump from a laser
+      // pit's cyan approach rim gets the ordinary running jump's X range.
+      if(p.dx===0&&p.grounded&&onLaserRim(p,level))p.ix=13*p.face;
       p.iy=-10;p.dx=0;p.grounded=false;p.state='fall';p.frame=5;jumped=true;
     }
   } else if(input.down) {p.state='duck';p.counter=-1;}
@@ -154,11 +157,26 @@ export function step(p, input, level) {
     // sPlatform deliberately keeps horizontal displacement.
     if(zone.kind!=='platform')p.x-=p.ix;
     if(zone.kind!=='platform'&&oldY>(zone.y1+zone.y2)/2){p.y=zone.y2+1;p.grounded=false;p.state='fall';p.iy=0;}
-    else {if(!p.grounded)p.landings++;p.y=zone.y1;p.grounded=true;if(p.state!=='walk')p.state='stay';p.ix=0;p.iy=0;p.dx=0;}
+    else {
+      // iTestZones calls the landing handler on zone entry only. Reapplying
+      // its gdX=0 while walking on the same floor loses algJump's run bonus.
+      const continuingWalk=p.grounded&&current===zone&&p.state==='walk';
+      if(!p.grounded)p.landings++;p.y=zone.y1;p.grounded=true;if(p.state!=='walk')p.state='stay';p.ix=0;p.iy=0;
+      if(!continuingWalk)p.dx=0;
+    }
     if(zone.kind==='hgate'){p.iy=0;p.dx=0;p.ix=0;p.hitGate=zone;}
   } else {p.grounded=false;p.state='fall';}
   p.ticks++;
   return jumped;
+}
+
+function onLaserRim(p,level){
+  return level.foreground.objects.some(o=>{
+    if(o.task!=='aLaserPit')return false;
+    const [l,t,r]=o.bounds;
+    if(Math.abs(p.y-(t+2))>3)return false;
+    return p.face===1?p.x>=l&&p.x<l+15:p.x>r-15&&p.x<=r;
+  });
 }
 
 // Selected mxsprace.dll: inclusive edges, enabled kind, greatest priority; first wins ties.

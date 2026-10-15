@@ -19,4 +19,12 @@ body:not(.game) h3{font-family:Arial,Helvetica,sans-serif;font-size:24px}
 
 .original-back{display:block;width:136px;margin:0 auto 18px;line-height:0}.original-back img{width:136px;height:70px}
 
+.visitor-counter{margin:30px auto 0;max-width:400px;padding:18px 12px;border:2px ridge #77628d;background:#080610;box-shadow:3px 3px 0 #020204}
+.counter-caption{font:bold 14px/1.5 Arial,Helvetica,sans-serif;color:var(--gold);margin-bottom:10px}
+.counter-digits{display:inline-flex;gap:2px;padding:5px;background:#000;border:3px inset #625a6c;max-width:100%;flex-wrap:wrap;justify-content:center}
+.counter-digits span{display:inline-block;position:relative;min-width:25px;padding:2px 4px;border:1px outset #666;background:linear-gradient(#333 0%,#111 49%,#000 50%,#202020 100%);color:#b7ffb0;text-shadow:0 0 3px #69b758;font:bold 30px/1.15 'Courier New',monospace}
+.counter-digits span::after{content:'';position:absolute;left:0;right:0;top:50%;border-top:1px solid #0008}
+.counter-status{font:11px/1.5 Arial,Helvetica,sans-serif;color:var(--muted);margin-top:10px}
+.counter-toggle{display:inline-block;font:11px/1.5 Arial,Helvetica,sans-serif;margin-top:5px}
+
 #lesson{display:flex;gap:18px;align-items:center;max-width:850px;margin:16px 0;padding:12px;border:2px ridge #ae88d6;background:#130b24;font-family:Arial,sans-serif}#lesson[hidden]{display:none}#lesson img{object-fit:contain;flex-shrink:0}#lesson h2{margin:0;color:#ffdd55;font-family:Arial,sans-serif}#lesson p{margin:8px 0}#lesson small{color:#c2b0dd}@media(max-width:550px){#lesson{align-items:flex-start}#lesson img{width:80px;height:auto}}

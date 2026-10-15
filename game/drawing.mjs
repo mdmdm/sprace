@@ -11,3 +11,10 @@ export function drawOrder(g){
  add('compactedTrash',g.compactedTrash,120);add('blast',g.blasts,120);
  return entries.sort((a,b)=>a.layer-b.layer);
 }
+
+// Objects.seq aDoorPanel clips sliding artwork to its original full TASKRECT.
+export function drawDoorPanel(ctx,level,panel,offset,bitmap){
+ const name=level.extra.enddoor[panel.frame],a=level.assets[name];
+ ctx.save();ctx.beginPath();ctx.rect(panel.x+a.xoffset,panel.y+a.yoffset,a.width,a.height);ctx.clip();
+ bitmap(name,panel.x+(panel.frame===1?-offset:offset),panel.y);ctx.restore();
+}

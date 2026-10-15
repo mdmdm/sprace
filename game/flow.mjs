@@ -1,6 +1,6 @@
-import {initial as initialLevel,step as playStep,kickHit} from './interactions.mjs';
+import {initial as initialLevel,step as playStep,kickHit} from './interactions.mjs?v=b45eb5915f75';
 export const ORDER=[0,1,2,3,4,5,6,7,8,9,10,11];
-export const TRAINING=[1001,1002,1003,1004];
+export const TRAINING=[1001];
 export function nextLevel(number){const order=TRAINING.includes(number)?TRAINING:ORDER;const index=order.indexOf(number);return index<0?undefined:order[index+1];}
 export function newGame(level,number=0,carry={}){
  const g=initialLevel(level);g.lifecycle=true;g.level.gameFlow=true;

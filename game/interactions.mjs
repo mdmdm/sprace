@@ -1,5 +1,5 @@
-import {initial as initialPlayer, step as terrainStep, selectZone} from './terrain.mjs';
-import {initWorld,updateWorld,pickupGoodie,batBounds,hitBat,killSpore} from './world.mjs';
+import {initial as initialPlayer, step as terrainStep, selectZone} from './terrain.mjs?v=b45eb5915f75';
+import {initWorld,updateWorld,pickupGoodie,batBounds,hitBat,killSpore} from './world.mjs?v=b45eb5915f75';
 export function initial(level){
  const p=initialPlayer(level.spawn);
  const g={p,original:level,level:structuredClone(level),sounds:[],life:20,ammo:20,score:0,keys:[],bullets:[],shots:[],explosions:[],elapsed:0,invincible:30,

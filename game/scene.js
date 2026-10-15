@@ -1,9 +1,9 @@
-import {drawOrder} from './drawing.mjs';
-import {newGame,advance,restart,playerVisual,doorOffset,readSave,ORDER,TRAINING,nextLevel} from './flow.mjs';
-import {objectVisible} from './interactions.mjs';
-import {Sound} from './audio.mjs';
-import {drawHud} from './hud.mjs';
-import {ITEM_NAMES,batVisual,blastVisuals} from './world.mjs';
+import {drawOrder,drawDoorPanel} from './drawing.mjs?v=b45eb5915f75';
+import {newGame,advance,restart,playerVisual,doorOffset,readSave,ORDER,TRAINING,nextLevel} from './flow.mjs?v=b45eb5915f75';
+import {objectVisible} from './interactions.mjs?v=b45eb5915f75';
+import {Sound} from './audio.mjs?v=b45eb5915f75';
+import {drawHud} from './hud.mjs?v=b45eb5915f75';
+import {ITEM_NAMES,batVisual,blastVisuals} from './world.mjs?v=b45eb5915f75';
 const $=id=>document.getElementById(id),canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
 let campaign,g,level,images={},soundEngine,running=false,loading=false,last=0,acc=0,loadVersion=0;
 const keys=new Set(),edges=new Set();ctx.imageSmoothingEnabled=false;
@@ -44,7 +44,7 @@ function result(){
  setRunning(false);$('result').hidden=false;$('pause').disabled=true;$('retry').disabled=true;
  const finished=g.phase==='complete',next=nextLevel(g.number);
  $('result-title').textContent=finished?(next===undefined?(TRAINING.includes(g.number)?'Training Ground completed!':ORDER.includes(g.number)?'Numbered level set completed!':'Alternate level complete!'):'Level complete!'):'Game over';
- $('result-text').textContent=`Score ${g.score}. ${finished?(TRAINING.includes(g.number)&&next===undefined?'The induction voyage is complete. Choose a recovered deck from Levels.':'The exit animation is complete.'):'All attempts used. Start a new game or choose another level.'}`;
+ $('result-text').textContent=`Score ${g.score}. ${finished?(TRAINING.includes(g.number)&&next===undefined?'Crew Access training is complete. Choose a recovered deck from Levels.':'The exit animation is complete.'):'All attempts used. Start a new game or choose another level.'}`;
  $('next').hidden=!finished||next===undefined;$('next').textContent=next===undefined?'Next level':'Next: '+campaign.levels.find(l=>l.number===next).title;
  $('again').textContent=finished?'Play again':'New game';
  if(finished){saved={version:1,level:next??g.number,score:g.score,completed:next===undefined};$('continue').hidden=!!saved.completed;storageSet(STORAGE,JSON.stringify(saved));}
@@ -105,12 +105,7 @@ function draw(){
  for(const o of fg.filter(o=>o.task==='aHorizGate'))bitmap(level.extra.horizgate[0],o.x,o.y);
  for(const {kind,item:e} of drawOrder(g)){
   if(kind==='object')object(e);
-  else if(kind==='doorPanel'){
-   const name=level.extra.enddoor[e.frame],a=level.assets[name],sign=e.frame===1?-1:1;
-   ctx.save();ctx.beginPath();ctx.rect(e.x+a.xoffset,e.y+a.yoffset,a.width,a.height);ctx.clip();
-   // Keep the original lintel and jambs; slide panels across the aperture.
-   const door=g.level.foreground.objects.find(o=>o.index===e.owner);ctx.beginPath();ctx.rect(door.x+8,door.y+14,34,27);ctx.clip();bitmap(name,e.x+sign*doorOffset(g,e.owner),e.y);ctx.restore();
-  }
+  else if(kind==='doorPanel')drawDoorPanel(ctx,level,e,doorOffset(g,e.owner),bitmap);
   else if(kind==='player'){const v=playerVisual(g);if(v)bitmap(v.name,g.p.x,g.p.y,v.face);}
   else if(kind==='weed')bitmap(level.extra.weed[e.hp>0?(e.hitUntil>g.elapsed?5:e.frame):e.explodedUntil>g.elapsed?7:6],e.x,e.y,e.face);
   else if(kind==='bat'){const v=batVisual(g,e);bitmap(v.name,v.x,v.y,v.face);}

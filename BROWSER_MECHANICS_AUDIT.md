@@ -55,7 +55,7 @@ All paths are under `experiments/`. Test descriptions below identify cases.
 | Group / mechanic | Original source contract/location | Browser coverage, discrepancy and action | Regression / remaining uncertainty |
 | --- | --- | --- | --- |
 | 1 Walk/stay/duck | `1/Player.seq:177–194,235`, algStay/algWalk/algDuck; `1/KEYBOARD.SEQ:20–88` | T: 5px walking, counter0–4, stay1, duck7 retained. Space/fire/down/up/left/right source priority is richer than browser edge inputs. | Existing walk/release tests are in the earlier movement experiment; current game route tests cover walking. Held fire/up and simultaneous-key scheduling remain translation gaps. |
-| 1 Jump/momentum/gravity | `Player.seq:196–205,275–291` | T: normal impulse `(10+gdX-gdX/2)*face`, −10; inertia tends to face, gravity+4 below8 retained. Browser grounded state approximates `gPrevZone==sFallZone`. Shoe flag is not player existence. | G entrance spring chain; A helium momentum. Original initial unknown-zone step and exact zone-entry ordering unresolved. |
+| 1 Jump/momentum/gravity | `Player.seq` algJump/sInertialMovement; selected `BD100.SQB` word3580; `ZONE.SEQ:47–68` | T **fixed October15**: retain gdX5 during continued walking on the same floor, restoring running impulse13 versus standing10. Previously repeated floor handling cleared gdX every tick. Vertical impulse−10 and gravity+4 unchanged. | A both directions, release-to-standing, saved Sporificator pit12 clearance; compiled jump and zone-entry guard asserted by archive audit. Full entry-only zone scheduling remains unresolved. |
 | 1 Floors/landing/undersides | `Player.seq:342–375`, sPlatform/sHorSolidZone | T **fixed**: ordinary floor subtracts giX before alignment; underside clears giY; platforms keep X displacement. Flying contact aligns outside floor instead of restoring arbitrary old Y. | A recovered floor versus Bomb in the Middle terminal, underside and floating contacts; I-test horizontal laser expectation corrected120 instead of121. No swept collision added. |
 | 1 Walls/boundaries | `Player.seq:138–143,379–412` | T **fixed**: wrap updates previous X, top/bottom clamp precedes point-zone selection, ambiguous side uses previous X. Removed extra post-contact clamp absent from source. | A bottom floor and wrap-wall probe. Flight wall response still simplified; source's ordered ELSE IF boundary chain retained for regular movement. |
 | 2 Base floors, walls, pits | `1/LEVELS.SEQ` aLevel; `Objects.seq:402–477` aPit/aWall/aLadder | Exported saved rectangles/priorities retained. Laser pit fixed200ms animation substitutes RANDOM180–230. | G pit override; existing inclusive priority/tie tests. Missing native source/runtime still limits the contract. |
@@ -260,3 +260,28 @@ Training Ground suite now fails setup (older fixture lacks extra.ladder). The pr
 five-practice-case pass predates those edits; no current full-suite pass is claimed.
 That ongoing source/test work was preserved. Latest standalone packaging validates
 5545 runtime references; the differing count reflects concurrent practice assets.
+
+
+### October15: exit panel height
+
+Removed scene’s unsupported aperture clip at y+14,height27. It removed the
+upper14 rows of the opaque41-row door panels, causing the reported transparent
+top third. `Objects.seq` aDoorPanel uses ENDTRANSP and a full initial TASKRECT.
+Renderer now clips each panel only to that full rectangle during sliding.
+Regression covers both full-height panel rectangles at closed/half/full offsets;
+existing exported-PNG opacity tests remain. Browser Conundrum screenshot:
+[full-height red exit](reference/browser-game/exit-door-full-height.jpg).
+107 Node checks pass; this fixes browser compositing without changing artwork,
+collision, animation duration, historical packages or frozen classic.
+
+## October15 — intentional cyan-rim standing-jump assistance
+
+Owner requests reliable standing jumps from laser pits' cyan rims. T now uses
+horizontal13 for stationary grounded jumps facing across the approach rim
+(saved bounds' outer15px, within3px of the pit's deck height). The source normal
+standing impulse remains10; this assistance is an intentional browser behavior.
+Running13 and vertical−10 are unchanged; no saved zones/art/hazards changed.
+A tests six rim positions in both directions against Porter Terror's saved
+floors/pit geometry (adjacent closed gate excluded), plus off-rim, other-deck
+and facing-away counterexamples.109 Node checks pass including Crew Access.
+Original runtime/full scheduler remain unverified.
