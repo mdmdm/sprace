@@ -7,6 +7,10 @@ published. Sources are the selected `dev/XX/1/Player.seq`, `Objects.seq`,
 `LEVELS.SEQ`, `TABLES.SEQ`, shared definitions, engine `task.c`/`process.c`,
 and the recovered manual. Level manifests pin their paths and hashes.
 
+Current follow-up: [October14 source-to-browser audit](BROWSER_MECHANICS_AUDIT.md)
+records all five groups, verified fixes, regression coverage and remaining gaps.
+Its current results supersede the dated rows below where they differ.
+
 ## Mechanic-by-mechanic audit
 
 | Translated mechanic | Original evidence | Current result and approximation |

@@ -1,5 +1,7 @@
 import {initial as initialLevel,step as playStep,kickHit} from './interactions.mjs';
 export const ORDER=[0,1,2,3,4,5,6,7,8,9,10,11];
+export const TRAINING=[1001,1002,1003,1004];
+export function nextLevel(number){const order=TRAINING.includes(number)?TRAINING:ORDER;const index=order.indexOf(number);return index<0?undefined:order[index+1];}
 export function newGame(level,number=0,carry={}){
  const g=initialLevel(level);g.lifecycle=true;g.level.gameFlow=true;
  return Object.assign(g,{number,phase:'playing',phaseTime:0,lives:carry.lives??5,score:carry.score??0,startScore:carry.score??0,flowEvent:null,kick:null,exitOwner:null});
@@ -9,7 +11,7 @@ export function restart(g,loseLife=false){
  if(lives<=0){g.life=0;g.lives=0;g.phase='gameover';g.flowEvent='gameover';return;}
  Object.assign(g,newGame(g.original,g.number,{lives,score:g.startScore}));g.flowEvent='retry';
 }
-function die(g){g.life=0;g.phase='dying';g.phaseTime=0;g.p.transition=null;g.bullets=[];g.shots=[];g.sounds=[{id:131,channel:2}];g.message='Captain Stubble lost an attempt';}
+function die(g){g.life=0;g.phase='dying';g.phaseTime=0;g.p.transition=null;g.p.springBounce=null;g.bullets=[];g.shots=[];g.sounds=[{id:131,channel:2}];g.message='Captain Stubble lost an attempt';}
 export function advance(g,input={}){
  g.flowEvent=null;
  if(['gameover','complete'].includes(g.phase)){g.sounds=[];return;}
@@ -50,6 +52,6 @@ export function playerVisual(g){
 }
 export function doorOffset(g,owner){return g.exitOwner===owner?Math.min(30,Math.floor(g.phaseTime/50)):0;}
 export function readSave(raw){
- try{const s=JSON.parse(raw);if(s.version===1&&[...ORDER,700,706].includes(s.level)&&Number.isInteger(s.score)&&s.score>=0&&s.score<1000000)return s;}catch{}
+ try{const s=JSON.parse(raw);if(s.version===1&&[...ORDER,...TRAINING,700,706].includes(s.level)&&Number.isInteger(s.score)&&s.score>=0&&s.score<1000000)return s;}catch{}
  return null;
 }

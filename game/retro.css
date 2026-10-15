@@ -18,3 +18,5 @@ body:not(.game) h3{font-family:Arial,Helvetica,sans-serif;font-size:24px}
 @media(max-width:700px){.story-intro>img{float:none;display:block;margin:0 auto 25px}.recordings{grid-template-columns:1fr}.art-gallery{grid-template-columns:1fr 1fr;gap:15px}.art-gallery figure{padding:12px}.story-chapter{padding:10px 15px}.faq summary{font-size:19px}nav{gap:8px 16px}}
 
 .original-back{display:block;width:136px;margin:0 auto 18px;line-height:0}.original-back img{width:136px;height:70px}
+
+#lesson{display:flex;gap:18px;align-items:center;max-width:850px;margin:16px 0;padding:12px;border:2px ridge #ae88d6;background:#130b24;font-family:Arial,sans-serif}#lesson[hidden]{display:none}#lesson img{object-fit:contain;flex-shrink:0}#lesson h2{margin:0;color:#ffdd55;font-family:Arial,sans-serif}#lesson p{margin:8px 0}#lesson small{color:#c2b0dd}@media(max-width:550px){#lesson{align-items:flex-start}#lesson img{width:80px;height:auto}}

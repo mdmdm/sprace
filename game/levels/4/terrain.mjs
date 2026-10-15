@@ -3,6 +3,36 @@ export function initial(spawn={x:80,y:420}) {
 }
 export function step(p, input, level) {
   p.event='';p.hitGate=null;
+  if(p.springBounce){
+    const s=p.springBounce,o=level.foreground.objects.find(o=>o.index===s.owner);
+    s.phase++;
+    const frame=[1,2,3,0][s.phase];
+    // Compiled aSpring aligns after1/2/3; frame0 does not realign feet.
+    if(s.phase<3)p.y=o.y+level.assets[level.extra.spring[frame]].yoffset;
+    const supported=['solid','platform','ladderUp','ladderDown','teleport','exit','spring'].includes(p.zone);
+    let jumped=false;
+    if(input.jump&&supported){
+      if(input.left)p.face=-1;if(input.right)p.face=1;
+      p.ix=(10+p.dx-Math.trunc(p.dx/2))*p.face;p.dx=0;p.iy=-10;p.state='fall';p.frame=5;jumped=true;
+    }else if(input.down){p.state='duck';p.frame=7;}
+    else if(input.left||input.right){p.face=input.left?-1:1;if(supported)p.state='walk';}
+    else if(p.state==='walk')p.state=supported?'stay':'fall';
+    if(p.state==='walk'){p.dx=5;p.ix=0;p.counter=(p.counter+1)%5;p.frame=p.counter;}
+    else if(p.state==='stay'){p.dx=0;p.ix=0;p.iy=0;p.frame=1;p.counter=-1;}
+    else{if(p.zone==='fall'){if(p.ix>p.face)p.ix--;if(p.ix<p.face)p.ix++;if(p.iy<8)p.iy+=4;}p.dx=0;}
+    p.x+=p.face*p.dx+p.ix;
+    if(p.x<0)p.x=640;else if(p.x>640)p.x=0;
+    const zone=selectZone(level.zones,p.x,p.y);
+    // Native ZONES ignores type0, not type-1. The activated spring keeps
+    // its zone index during compression, so iTestZones retains gPrevZone.
+    if(zone?.owner!==s.owner){p.zone=zone?.kind??'fall';if(p.zone==='fall')p.state='fall';}
+    if(s.phase===3){
+      p.iy=-s.power;p.grounded=false;p.state='fall';
+      if(p.shoeJump){p.iy=s.walking?-8:-22;if(!s.walking)p.ix=10*p.face;}
+      p.dx=0;p.springBounce=null;
+    }
+    p.ticks++;return jumped;
+  }
   if(p.transition){
     const t=p.transition;
     if(t.kind==='teleport'){
@@ -13,19 +43,27 @@ export function step(p, input, level) {
     p.y=t.targetY;p.transition=null;input={};
     }
   }
-  const oldX=p.x;
+  let oldX=p.x;
   if(p.flight&&!p.transition){
     const f=p.flight,oldY=p.y;
-    if(f.phase==='inflate'){if(++f.frame>=6){f.phase='float';f.frame=0;}}
-    else if(f.phase==='deflate'){if(++f.frame>=6){p.flight=null;p.state='fall';p.iy=0;return false;}}
+    if(f.phase==='inflate'){
+      // algInflate calls sInertialMovement; helium does not reset momentum.
+      if(!p.grounded){p.ix+=Math.trunc(p.dx/2)*p.face;if(p.ix>p.face)p.ix--;if(p.ix<p.face)p.ix++;if(p.iy<8)p.iy+=4;}
+      p.dx=0;if(++f.frame>=5){f.phase='float';f.frame=0;}
+    }
+    else if(f.phase==='deflate'){if(++f.frame>=6){p.flight=null;p.state='fall';p.frame=6;return false;}}
     else if(input.jump){f.phase='deflate';f.frame=0;p.event='Deflated';}
     else{p.ix=Math.max(-5,Math.min(5,p.ix+(input.right?2:0)-(input.left?2:0)));p.ix-=Math.sign(p.ix);if(p.iy>-2)p.iy--;}
     p.x+=p.ix;p.y+=p.iy;if(p.x<0)p.x=640;else if(p.x>640)p.x=0;p.y=Math.max(10,Math.min(440,p.y));
     const z=selectZone(level.zones,p.x,p.y);
     if(z?.kind==='dead')p.dead=true;
     else if(z?.kind==='exit'){p.complete=true;p.event='Exit reached';}
-    else if(z?.kind==='wall'||z?.kind==='gate'){p.x=oldX;p.ix=0;if(z.kind==='gate')p.hitGate=z;}
-    else if(z&&['solid','platform','hgate'].includes(z.kind)){p.y=oldY;p.iy=0;if(z.kind==='hgate')p.hitGate=z;}
+    else if(z?.kind==='wall'||z?.kind==='gate'){
+      // Player.seq sVerSolidZone / jWallDone restores BOTH previous coordinates.
+      p.x=oldX<=z.x1?z.x1-1:oldX>=z.x2?z.x2+1:oldX<(z.x1+z.x2)/2?z.x1-1:z.x2+1;
+      p.y=oldY;p.ix=p.x<z.x1?-1:1;p.iy=2;if(z.kind==='gate')p.hitGate=z;
+    }
+    else if(z&&['solid','platform','ladderUp','ladderDown','teleport','hgate'].includes(z.kind)){p.y=oldY>(z.y1+z.y2)/2?z.y2+1:z.y1-1;p.iy=0;if(z.kind==='hgate')p.hitGate=z;}
     p.grounded=false;p.ticks++;return false;
   }
   const current=selectZone(level.zones,p.x,p.y);
@@ -52,30 +90,34 @@ export function step(p, input, level) {
       else p.event='No matching teleporter · link '+source.p1;
     }
   }
-  const oldY=p.y;
+  let oldY=p.y;
+  // sJump/sGoLeft/sGoRight read gPrevZone, including the last underside handler.
+  const supported=p.grounded||['solid','platform','ladderUp','ladderDown','teleport','exit','spring'].includes(p.zone);
   let jumped=false;
   // KEYBOARD.SEQ priority: space press, down, left, right, release.
   if (input.jump) {
     if(input.left) p.face=-1;
     if(input.right) p.face=1;
-    if(p.grounded) {
+    if(supported) {
       p.ix=(10+p.dx-Math.trunc(p.dx/2))*p.face;
       p.iy=-10;p.dx=0;p.grounded=false;p.state='fall';p.frame=5;jumped=true;
     }
   } else if(input.down) {p.state='duck';p.counter=-1;}
   else if(input.left || input.right) {
     p.face=input.left?-1:1;
-    if(p.grounded) p.state='walk';
+    if(supported) p.state='walk';
   } else if(['walk','duck'].includes(p.state)) p.state=p.grounded?'stay':'fall';
   p.counter++;
   if(p.counter >= (p.state==='walk'?5:1)) p.counter=0;
   if(!jumped) {
-    if(p.state==='walk' && p.grounded) {
-      p.dx=5;p.ix=0;p.iy=0;p.frame=p.counter;
+    if(p.state==='walk') {
+      p.dx=5;p.ix=0;p.frame=p.counter;
     } else if(p.state==='stay' && p.grounded) {
       p.dx=0;p.ix=0;p.iy=0;p.frame=1;p.counter=-1;
     } else {
-      if(!p.grounded) {
+      // sInertialMovement runs only after gPrevZone becomes sFallZone.
+      // Undefined is the existing fixture/startup fallback; initial task timing is unverified.
+      if(!p.grounded&&(p.zone??'fall')==='fall') {
         p.ix+=Math.trunc(p.dx/2)*p.face;
         if(p.ix>p.face) p.ix--;
         if(p.ix<p.face) p.ix++;
@@ -89,28 +131,32 @@ export function step(p, input, level) {
   p.x+=p.face*p.dx+p.ix;
   p.y+=p.iy;
   // Player.seq's 640-pixel horizontal wrap.
-  if(p.x<0) p.x=640;
-  else if(p.x>640) p.x=0;
-  if(p.y<10) p.y=10;
+  if(p.x<0){p.x=640;oldX=p.x;}
+  else if(p.y<10){p.y=10;oldY=p.y;}
+  else if(p.x>640){p.x=0;oldX=p.x;}
+  else if(p.y>440){p.y=440;oldY=p.y;}
   const zone=selectZone(level.zones,p.x,p.y);
   p.zone=zone?.kind || 'fall';
   if(zone?.kind==='dead') {if(level.gameFlow){p.dead=true;p.event='Laser pit';}else{const ticks=p.ticks;Object.assign(p,initial(level.spawn),{ticks,event:'Laser pit — restarted'});}}
   else if(zone?.kind==='exit') {p.event='Exit reached';p.complete=true;}
   else if(zone?.kind==='spring'){
     const o=level.foreground.objects.find(o=>o.index===zone.owner);
-    p.y=zone.y1;p.iy=-Math.min(55,o.p1+15);p.ix=p.dx===0?10*p.face:p.ix;if(p.dx===0)p.iy=-22;
-    p.dx=0;p.grounded=false;p.state='fall';p.frame=5;p.event='Spring bounce';p.springUntil=p.ticks+3;
+    p.springBounce={owner:o.index,phase:0,power:Math.min(55,o.p1+15),walking:p.dx!==0};
+    p.y=o.y+level.assets[level.extra.spring[1]].yoffset;
+    p.dx=0;p.ix=0;p.iy=0;p.grounded=false;p.state='stay';p.frame=1;p.event='Spring bounce';
   }
   else if(zone?.kind==='wall' || zone?.kind==='gate') {
-    p.x=oldX<=zone.x1?zone.x1-1:oldX>=zone.x2?zone.x2+1:p.x<(zone.x1+zone.x2)/2?zone.x1-1:zone.x2+1;
+    p.x=oldX<=zone.x1?zone.x1-1:oldX>=zone.x2?zone.x2+1:oldX<(zone.x1+zone.x2)/2?zone.x1-1:zone.x2+1;
     p.y=oldY;p.ix=p.x<zone.x1?-1:1;p.iy=2;p.dx=0;p.grounded=false;p.state='fall';
     if(zone.kind==='gate')p.hitGate=zone;
   } else if(zone && ['solid','platform','ladderUp','ladderDown','teleport','hgate'].includes(zone.kind)) {
-    if(zone.kind!=='platform'&&oldY>(zone.y1+zone.y2)/2){p.y=zone.y2+1;p.grounded=false;p.state='fall';}
+    // sHorSolidZone cancels horizontal momentum before aligning either edge.
+    // sPlatform deliberately keeps horizontal displacement.
+    if(zone.kind!=='platform')p.x-=p.ix;
+    if(zone.kind!=='platform'&&oldY>(zone.y1+zone.y2)/2){p.y=zone.y2+1;p.grounded=false;p.state='fall';p.iy=0;}
     else {if(!p.grounded)p.landings++;p.y=zone.y1;p.grounded=true;if(p.state!=='walk')p.state='stay';p.ix=0;p.iy=0;p.dx=0;}
     if(zone.kind==='hgate'){p.iy=0;p.dx=0;p.ix=0;p.hitGate=zone;}
   } else {p.grounded=false;p.state='fall';}
-  p.y=Math.min(440,p.y);
   p.ticks++;
   return jumped;
 }

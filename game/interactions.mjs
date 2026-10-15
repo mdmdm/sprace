@@ -1,5 +1,5 @@
 import {initial as initialPlayer, step as terrainStep, selectZone} from './terrain.mjs';
-import {initWorld,updateWorld,pickupGoodie,batBounds,hitBat} from './world.mjs';
+import {initWorld,updateWorld,pickupGoodie,batBounds,hitBat,killSpore} from './world.mjs';
 export function initial(level){
  const p=initialPlayer(level.spawn);
  const g={p,original:level,level:structuredClone(level),sounds:[],life:20,ammo:20,score:0,keys:[],bullets:[],shots:[],explosions:[],elapsed:0,invincible:30,
@@ -13,7 +13,7 @@ export function bounds(asset,x,y,face=1){
 }
 export function playerBounds(g){const n=g.p.frame+(g.ammo>0?11:0),f=g.p.flight;return f?bounds(g.level.assets[g.level.extra.helium[f.phase==='inflate'?5-Math.max(0,Math.min(5,f.frame)):f.phase==='deflate'?Math.min(5,f.frame):0]],g.p.x,g.p.y):bounds(g.level.assets[g.level.frames[n]],g.p.x,g.p.y,g.p.face);}
 function sound(g,id,channel=2){g.sounds.push({id,channel});}
-function damage(g,message){if(g.invincible)return;g.p.transition=null;g.p.flight=null;if(g.p.iy>=0)g.p.iy=-10;g.life-=g.p.hitGate?.strength??1;g.invincible=8;g.p.ix=-6*g.p.face;g.p.grounded=false;g.p.state='fall';g.message=message;sound(g,120,8);if(g.life<=0){if(g.lifecycle){g.p.dead=true;g.message='Life depleted';return;}const fresh=initial(g.original);Object.assign(g,fresh);g.message='Life depleted — restarted';sound(g,131);}}
+function damage(g,message){if(g.invincible)return;g.p.transition=null;g.p.springBounce=null;g.p.flight=null;if(g.p.iy>=0)g.p.iy=-10;g.life-=g.p.hitGate?.strength??1;g.invincible=8;g.p.ix=-6*g.p.face;g.p.grounded=false;g.p.state='fall';g.message=message;sound(g,120,8);if(g.life<=0){if(g.lifecycle){g.p.dead=true;g.message='Life depleted';return;}const fresh=initial(g.original);Object.assign(g,fresh);g.message='Life depleted — restarted';sound(g,131);}}
 export function sendEvent(g,event){
  let count=0;
  for(const o of g.level.foreground.objects){
@@ -63,8 +63,8 @@ export function hitEnemy(g,e,kill=false){
 export function hitTargets(g,bb){
  let hit=false;
  for(const e of g.enemies)if(e.hp>0&&overlap(bb,enemyBounds(g,e))){hitEnemy(g,e);hit=true;}
- for(const e of g.bats)if(!e.dead&&e.restUntil<=g.elapsed&&overlap(bb,batBounds(g,e,bounds))){hitBat(g,e);hit=true;}
- for(const s of g.spores)if(!s.dead&&overlap(bb,bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face))){s.dead=true;g.score+=2;sound(g,132,3);hit=true;}
+ for(const e of g.bats)if(!e.dead&&overlap(bb,batBounds(g,e,bounds))){hitBat(g,e);hit=true;}
+ for(const s of g.spores)if(!s.dead&&overlap(bb,bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face))){killSpore(g,s,true);hit=true;}
  return hit;
 }
 export function kickHit(g,frame){return hitTargets(g,bounds(g.level.assets[g.level.frames[frame]],g.p.x,g.p.y,g.p.face));}
@@ -77,6 +77,7 @@ export function step(g,input){
  if(p.event?.startsWith('Teleported'))sound(g,122);
  if(p.event==='Exit reached')sound(g,157);
  if(p.event==='Deflated')sound(g,142);
+ if(p.event==='Spring bounce')sound(g,163,3);
  // Player.seq sDeadZone/sHorDeadZone align against the barrier before iHit.
  if(p.hitGate){
   const gate=p.hitGate;
@@ -88,7 +89,7 @@ export function step(g,input){
  }
  const pb=playerBounds(g);
  for(const o of g.level.foreground.objects){
-  if(!o.collected&&['aGoodie','aCard','aLock','aSwitch'].includes(o.task)&&overlap(pb,o.bounds)&&p.y<o.bounds[3]+(o.task==='aGoodie'?10:20))pickup(g,o);
+  if(!o.collected&&['aGoodie','aCard','aLock','aSwitch'].includes(o.task)&&overlap(pb,o.bounds)&&(o.task==='aLock'||(p.y<o.bounds[3]+(o.task==='aGoodie'?10:20)&&p.x>o.bounds[0]-6&&p.x<o.bounds[2]+6)))pickup(g,o);
  }
  for(const e of g.enemies){
   if(e.hp<=0)continue;

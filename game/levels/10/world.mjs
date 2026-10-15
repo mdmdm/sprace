@@ -20,6 +20,11 @@ export function batVisual(g,e){
  return {name:g.level.extra.bat[e.dead||e.restUntil>g.elapsed?3:e.frame],x:e.x,y:e.homeY+(e.dead||e.restUntil>g.elapsed?23:-5),face:e.face};
 }
 export function batBounds(g,e,bounds){const v=batVisual(g,e);return bounds(g.level.assets[v.name],v.x,v.y,v.face);}
+export function killSpore(g,s,award=false){
+ if(s.dead)return;
+ s.dead=true;s.dyingStarted=g.elapsed;s.frame=8;
+ if(award){g.score+=2;sound(g,132,3);}
+}
 export function hitBat(g,e,kill=false){
  if(e.dead)return;e.dead=kill;e.restUntil=kill?Infinity:g.elapsed+15000;sound(g,154,3);g.score+=kill?7:4;
  // A resting bat is a temporary platform; explosion-killed bats do not create one.
@@ -31,21 +36,22 @@ export function pickupGoodie(g,o){
  const kind=o.type_value%10,amount=o.p1<0?1:o.p1;
  if(kind===1){if(g.ammo>=20)return false;g.ammo=Math.min(20,g.ammo+amount);}
  else if(kind===2){if(g.life>=20)return false;g.life=Math.min(20,g.life+amount);}
- else if(kind===3){if(g.lifecycle){if(g.lives<6)g.lives=Math.min(6,g.lives+amount);else if(g.life<20)g.life=20;else g.score+=500;}else g.score+=500;}
+ else if(kind===3){if(g.lifecycle){if(g.lives<6){const total=g.lives+amount;g.lives=Math.min(6,total);if(total>6)g.life=20;}else if(g.life<20)g.life=20;else g.score+=500;}else g.score+=500;}
  else if(kind===0){if(g.inventory.length>=6)return false;g.inventory.push(Math.trunc(o.type_value/10));}
  else return false;
  o.collected=true;g.score++;g.message=kind===0?ITEM_NAMES[Math.trunc(o.type_value/10)]+' collected':kind===1?'Ammo replenished':kind===2?'Health restored':'Extra attempts collected';
- sound(g,kind===2?167:kind===3?169:o.type_value===30?168:o.type_value===10?171:o.type_value===50?172:124,kind===1?2:7);return true;
+ sound(g,o.type_value===12?160:kind===2?167:kind===3?169:o.type_value===30?168:o.type_value===10?171:o.type_value===50?172:124,kind===2||kind===3||[10,30,50].includes(o.type_value)?6:2);return true;
 }
 export function useItem(g){
  if(!g.inventory.length||g.p.transition)return false;
  const id=g.inventory[g.selection];
  // Only translated usable items are consumed.
- if(![1,3,4,5].includes(id)){g.message='This device is not translated yet';return false;}
+ if(![1,2,3,4,5].includes(id)){g.message='This device is not translated yet';return false;}
  g.inventory.splice(g.selection,1);g.selection%=g.inventory.length||1;sound(g,129);
  if(id===1){g.life=20;g.message='Oxygen restored health';}
- else if(id===4){if(!g.p.flight){g.p.flight={phase:'inflate',frame:-1};g.p.iy=0;g.p.dx=0;g.p.grounded=false;sound(g,141);}g.message='Helium · Space to deflate';}
- else{g.bombs.push({x:g.p.x-8,y:g.p.y-28,frame:id===3?7:9,started:g.elapsed,range:id===3?6:20});g.message=(id===3?'Hydrogen':'Nitrogen')+' countdown';}
+ else if(id===2){g.message='Carbon dioxide used';} // jCO consumes the item, then QUIT.
+ else if(id===4){if(!g.p.flight){g.p.flight={phase:'inflate',frame:-1};sound(g,141);}g.message='Helium · Space to deflate';}
+ else{g.bombs.push({x:g.p.x-8,y:g.p.y-28+(g.p.flight?10:0),frame:id===3?7:9,started:g.elapsed,range:id===3?6:20});g.message=(id===3?'Hydrogen':'Nitrogen')+' countdown';}
  return true;
 }
 // Objects.seq aTrashSource / aTrashCompactor. Seeded delays replace RANDOM.
@@ -64,13 +70,13 @@ export function updateMachinery(g){
   }
   const t=m.trash;if(!t)continue;
   if(t.phase==='drop'){t.y=Math.min(o.y+92,t.y+4.8);if(t.y===o.y+92)t.phase='belt';}
-  else if(t.phase==='belt'){t.x=Math.min(m.x-15,t.x+1.8);if(t.x===m.x-15){m.phase='press';m.frame=0;m.y=m.baseY-32;t.phase='through';if(g.p.y>o.bounds[3]&&g.p.y<o.bounds[1]+40)sound(g,136,6);}}
+  else if(t.phase==='belt'){t.x=Math.min(m.x-15,t.x+1.8);if(t.x===m.x-15){m.phase='press';m.frame=0;m.y=m.baseY-32;t.phase='through';if(g.p.y>o.bounds[3]&&g.p.y<o.bounds[1]+40)sound(g,136,4);}}
   else if(t.phase==='through'){t.x=Math.min(m.x+5,t.x+1.8);if(t.x===m.x+5){t.frame++;t.phase='out';g.compactedTrash.push({...t,owner:m.owner});m.trash=null;m.next=g.elapsed+500+rand(g,3501);}}
 
  }
  for(const t of g.compactedTrash){
   const o=owner(g,t.owner);
-  if(t.phase==='out'){t.x=Math.min(o.x+266,t.x+1.8);if(t.x===o.x+266){t.phase='suck';if(g.p.y>o.bounds[3]&&g.p.y<o.bounds[1]+40)sound(g,137,9);}}
+  if(t.phase==='out'){t.x=Math.min(o.x+266,t.x+1.8);if(t.x===o.x+266){t.phase='suck';if(g.p.y>o.bounds[3]&&g.p.y<o.bounds[1]+40)sound(g,137,7);}}
   else {t.y=Math.max(o.y+52,t.y-4.8);if(t.y===o.y+52)t.dead=true;}
  }
  g.compactedTrash=g.compactedTrash.filter(t=>!t.dead);
@@ -88,7 +94,7 @@ function updateBlast(g,b,api){
  for(const w of b.waves){
   if(w.done)continue;w.clock+=60;
   while(w.clock>=100&&!w.done){w.clock-=100;
-   if(w.tail){w.frame=3+w.tail;if(++w.tail>3)w.done=true;continue;}
+   if(w.tail){if(++w.tail>3)w.done=true;else w.frame=3+w.tail;continue;}
    const nextX=b.x+w.face*w.step*6,x=nextX+w.face*15;
    const blocked=nextX<0||nextX>640||[b.y,b.y-30].some(y=>selectZone(g.level.zones,x,y)?.kind==='wall');
    if(blocked||w.step>=b.range){w.tail=1;w.frame=4;continue;}
@@ -129,34 +135,35 @@ export function updateWorld(g,input,api){
    for(const face of [-1,1])if(rand(g,11)===0&&g.spores.length<40){const [l,top,r,b]=o.bounds;g.spores.push({x:face<0?l-(o.type_value?10:20):r+(o.type_value?10:20),y:b-(o.type_value?53:0),face,frame:0,age:0,clock:0,fall:false});}
   }
  }
- for(const s of g.spores){s.clock+=60;while(s.clock>=160){s.clock-=160;s.age++;
+ for(const s of g.spores){if(s.dead){s.frame=g.elapsed-s.dyingStarted<160?8:9;continue;}s.clock+=60;while(s.clock>=160){s.clock-=160;s.age++;
    if(s.age<4){s.frame=s.age;continue;}
    s.x+=s.fall?0:s.face*2;s.y+=s.fall?5:0;s.frame=s.fall?2:4+s.age%4;
    const a=g.level.assets[g.level.extra.spore[s.frame]],bb=bounds(a,s.x,s.y,s.face),z=selectZone(g.level.zones,s.face>0?bb[2]-5:bb[0]+5,bb[3]+(s.fall?2:4));
    if(z&&['solid','platform','ladderUp','ladderDown','teleport'].includes(z.kind)){s.y+=z.y1-bb[3];s.fall=false;}
    else if(!z||z.kind==='fall')s.fall=true;else if(['dead','gate','hgate'].includes(z.kind))s.dead=true;else s.face=-s.face;
   }
-  if(overlap(playerBounds(g),bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face)))damage(g,'Spore contact');
+  if(!s.dead&&overlap(playerBounds(g),bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face)))damage(g,'Spore contact');
   if(s.age>104||s.x<0||s.x>640||s.y>480)s.dead=true;
  }
- g.spores=g.spores.filter(s=>!s.dead);
+ for(const s of g.spores)if(s.dead&&s.dyingStarted===undefined){s.dyingStarted=g.elapsed;s.frame=8;}
+ g.spores=g.spores.filter(s=>!s.dead||g.elapsed-s.dyingStarted<320);
  for(const b of g.bombs){
   const a=g.level.assets[g.level.extra.goodie[b.frame]],bb=bounds(a,b.x,b.y),z=selectZone(g.level.zones,b.x+8,bb[3]);
   if(z?.kind==='wall'){const x=b.x+8;b.x=(x-z.x1>z.x2-x?z.x2:z.x1);}
   else if(z&&['solid','platform','ladderUp','ladderDown','teleport','exit'].includes(z.kind)){
    b.y+=z.y1-bb[3];if(b.zone===z)b.x=z.x1+b.offset-8;else{b.zone=z;b.offset=b.x+8-z.x1;}
   }else if(!z||!['dead','gate','hgate'].includes(z.kind)){b.y+=2;b.zone=null;}
-  if(g.elapsed-b.started>=3600){b.dead=true;g.blasts.push({x:b.x+3,y:b.y+30,started:g.elapsed,range:b.range});sound(g,b.range>10?126:125,4);}
+  if(g.elapsed-b.started>=3600){b.dead=true;g.blasts.push({x:b.x+3,y:b.y+30,started:g.elapsed,range:b.range});sound(g,b.range>10?126:125,5);}
  }
  g.bombs=g.bombs.filter(b=>!b.dead);
  for(const blast of g.blasts){
   updateBlast(g,blast,api);
   for(const v of blastVisuals(g,blast).filter(v=>v.frame>=2)){
   const area=bounds(g.level.assets[g.level.extra.explosion[v.frame]],v.x,v.y);
-  for(const o of g.level.foreground.objects)if(['aWall2','aFloor'].includes(o.task)&&!o.destroying&&!o.destroyed&&overlap(area,o.bounds)){o.destroying={started:g.elapsed};sound(g,147,5);}
+  for(const o of g.level.foreground.objects)if(['aWall2','aFloor'].includes(o.task)&&!o.destroying&&!o.destroyed&&overlap(area,o.bounds)){o.destroying={started:g.elapsed};sound(g,147,7);}
   for(const e of g.bats)if(!e.dead&&overlap(area,batBounds(g,e,bounds)))hitBat(g,e,true);
   for(const e of g.enemies)if(e.hp>0&&overlap(area,bounds(g.level.assets[g.level.extra.weed[e.frame]],e.x,e.y,e.face))){api.hitEnemy(g,e,true);}
-  for(const s of g.spores)if(overlap(area,bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face)))s.dead=true;
+  for(const s of g.spores)if(!s.dead&&overlap(area,bounds(g.level.assets[g.level.extra.spore[s.frame]],s.x,s.y,s.face)))killSpore(g,s,true);
   if(overlap(area,playerBounds(g)))p.dead=true;
   }
  }

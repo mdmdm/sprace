@@ -1,4 +1,39 @@
 {
+  "compiled_solid_zones": [
+    8,
+    49,
+    56,
+    57,
+    48,
+    66,
+    54,
+    67,
+    224
+  ],
+  "compiled_walk_words": [
+    -32067,
+    948,
+    5,
+    -32067,
+    949,
+    0,
+    -32067,
+    954,
+    0,
+    -32068,
+    2,
+    -32403,
+    -32418,
+    3195,
+    -32403,
+    -31046,
+    1,
+    -30097,
+    -32003
+  ],
+  "selected_page_has_compiled_SQB_prefix": true,
+  "spring_is_solid_in_compiled_game": true,
+  "compiled_walk_preserves_vertical_momentum": true,
   "readable_rows_matched": 173,
   "compiled_extra_row_id": 173,
   "compiled_extra_row": [
@@ -20,7 +55,8 @@
   "sources": {
     "examples/space-race/dev/BD100.REF": "5170edb980ca76dc18ddf207ffe9415f17ed0abe7e7044b3b4b537652e591798",
     "examples/space-race/dev/BD100.SQB": "85d625851ff76d281be46949ac19bfb8ae1c49a349e4647dcafb533980f79918",
-    "examples/space-race/dev/XX/1/TABLES.SEQ": "b3d449104903025d371fbf814e2257ee5d547958b4b8a3b6e10aaaec8848f191"
+    "examples/space-race/dev/XX/1/TABLES.SEQ": "b3d449104903025d371fbf814e2257ee5d547958b4b8a3b6e10aaaec8848f191",
+    "examples/space-race/rel/data/Bd100.pag": "60e505932e9863dbe8e186d8421d431044c9e384d22328543a5dff47886f2319"
   },
   "compact5_matches_selected_page": true,
   "layouts": [
