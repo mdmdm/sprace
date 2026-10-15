@@ -11,46 +11,7 @@
         163,
         169
       ],
-      "briefing": "The crew access route has ladders, moving platforms and a spring. Matching Trance Porters share a circuit; some have more than two stops. Engineering has left three buttons to release the airlock gates. Mind the live pits, Captain."
-    },
-    {
-      "number": 1002,
-      "title": "Fuel & Air",
-      "file": "levels/1002/level.json",
-      "source": "New ship deck \u2014 October 2026",
-      "category": "training",
-      "music": 190,
-      "missing_audio": [
-        163,
-        169
-      ],
-      "briefing": "The fuel store holds several kinds of gas. Check the highlighted inventory slot before pressing Enter; Shift changes it. Hydrogen clears the first bulkhead. Leave the bomb behind and get clear. Collect nitrogen before helium, then change the selected slot to inflate. The ventilation shaft leads to a second bulkhead; nitrogen has a much larger blast."
-    },
-    {
-      "number": 1003,
-      "title": "Hydroponics",
-      "file": "levels/1003/level.json",
-      "source": "New ship deck \u2014 October 2026",
-      "category": "training",
-      "music": 190,
-      "missing_audio": [
-        163,
-        169
-      ],
-      "briefing": "Bats have occupied the cargo atrium. Jump to bring your pellets up to their height. Little spores have occupied the ducts, and Mama is guarding the greenhouse. A pellet rests a bat; baby spores need one hit, Mama needs ten. Crouch to line up a shot at the little ones. Bring the greenhouse key back to the airlock."
-    },
-    {
-      "number": 1004,
-      "title": "Night Shift",
-      "file": "levels/1004/level.json",
-      "source": "New ship deck \u2014 October 2026",
-      "category": "training",
-      "music": 190,
-      "missing_audio": [
-        163,
-        169
-      ],
-      "briefing": "Three hungry Mama spores, one missing airlock card, and only twenty pellets. I do not like those odds, Captain. Engineering left a nitrogen tank by the Trance Porter. Do try to be somewhere else when it goes off."
+      "briefing": "ChatGPT generated training level. The crew access route has ladders, moving platforms and a spring. Matching Trance Porters share a circuit. Engineering has left three buttons to release the airlock gates. Mind the live pits, Captain."
     },
     {
       "number": 0,
